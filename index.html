@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-title" content="Benim Sesim">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Benim Sesim</title>
+<style>
+:root{--bg:#f4f7f6;--ink:#2b3a42;--line:#dfe6e9}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#fff;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 10px;padding-top:max(8px,env(safe-area-inset-top))}
+header .ttl{flex:1;display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;min-width:0}
+header .ttl .emo{font-size:30px}
+header .ttl .logo{width:40px;height:40px;border-radius:50%;object-fit:cover;flex:none}
+header .ttl span.t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb{border:0;background:#eef3f2;border-radius:16px;min-width:52px;height:52px;font-size:26px;font-weight:800;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:0 12px}
+.hb.lang{font-size:15px}
+.hb:active{transform:scale(.96)}
+#ribbon{display:none;background:#ffb74d;color:#3b2a00;text-align:center;font-weight:700;padding:6px;font-size:14px}
+#main{padding:14px 12px 130px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
+.home .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.card{position:relative;background:#fff;border:5px solid var(--c,#9ab);border-radius:24px;aspect-ratio:1/1.08;display:flex;flex-direction:column;overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.card.wide{grid-column:span 2;aspect-ratio:2.16/1.08}
+.card:active{transform:scale(.97)}
+.card.on{transform:scale(1.04);box-shadow:0 0 0 6px color-mix(in srgb,var(--c) 35%,transparent)}
+.pic{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:4px}
+.pic img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
+.emo{font-size:clamp(54px,16vw,84px);line-height:1}
+.home .emo{font-size:clamp(60px,18vw,92px)}
+.lbl{background:color-mix(in srgb,var(--c) 14%,#fff);text-align:center;font-weight:800;font-size:19px;padding:7px 4px;line-height:1.2}
+.lbl .sec{font-weight:600;font-size:16px;opacity:.75}
+.home .lbl{font-size:21px}
+.scene{display:flex;align-items:center;justify-content:center;gap:2%;width:100%;height:100%}
+.scene svg{width:46%;height:auto;max-height:100%}
+.scene .emo{font-size:clamp(40px,12vw,64px)}
+.dot{width:72%;aspect-ratio:1;max-width:96px;border-radius:50%;border:3px solid rgba(0,0,0,.12)}
+.letter{display:flex;flex-direction:column;align-items:center;gap:2px}
+.letter b{font-size:clamp(40px,12vw,58px);line-height:1;color:#244}
+.letter .emo{font-size:clamp(36px,11vw,52px)}
+.num{display:flex;flex-direction:column;align-items:center;gap:2px}
+.num b{font-size:clamp(46px,14vw,66px);line-height:1;color:#244}
+.num .dots{font-size:clamp(17px,5vw,24px);line-height:1.15;text-align:center;max-width:90%;word-break:break-all}
+.pen{position:absolute;top:4px;right:6px;font-style:normal;font-size:18px;background:#fff;border-radius:50%;padding:2px 4px;z-index:2}
+.card.add{border-style:dashed;--c:#8a98a0;background:#fafcfc}
+.card.add .emo{font-size:60px;color:#8a98a0}
+.hint{grid-column:1/-1;background:#fff;border:3px dashed #c3ced3;border-radius:20px;padding:16px;font-size:17px;line-height:1.5}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:#fff;border-top:3px solid var(--line);display:none;align-items:center;gap:12px;padding:8px 12px;padding-bottom:max(8px,env(safe-area-inset-bottom));min-height:84px}
+#bar .bp{width:84px;height:70px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#bar .bp .emo{font-size:46px}
+#bar .bp .scene svg{width:40px}
+#bar .bp .dot{width:46px}
+#bar .bp .letter b{font-size:30px}
+#bar .bp .letter .emo{font-size:26px}
+#bar .bp .num b{font-size:34px}#bar .bp .num .dots{display:none}
+#bar .bt{flex:1;font-size:22px;font-weight:800;line-height:1.2}
+#bar .bt .sec{font-size:16px;font-weight:600;opacity:.7}
+#bar button{width:72px;height:72px;border-radius:50%;border:0;background:#3fb68b;color:#fff;font-size:34px}
+.ov{position:fixed;inset:0;z-index:20;background:rgba(30,40,45,.55);display:flex;align-items:flex-end;justify-content:center}
+.box{background:#fff;width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:26px 26px 0 0;padding:18px 18px 28px;user-select:text}
+.box h2{margin:0 0 10px;font-size:22px}.box h3{margin:16px 0 6px;font-size:16px;color:#5b6b73}
+.box label{display:block;font-size:14px;font-weight:700;margin:10px 0 0;color:#4a5a62}
+.box input[type=text],.box input:not([type]){width:100%;font-size:18px;padding:11px;border:2px solid var(--line);border-radius:12px;margin-top:4px;user-select:text}
+.box .chk{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600;padding:8px 0}
+.box .chk input{width:22px;height:22px}
+.box button,.box .btn{font-size:17px;font-weight:700;border:0;border-radius:14px;padding:13px 16px;background:#e8efee;color:var(--ink);margin:6px 6px 0 0;display:inline-block;cursor:pointer}
+.box button.pri{background:#3fb68b;color:#fff}.box button.dng{background:#ffd9d6;color:#a3261d}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button.sel{background:#3fb68b;color:#fff}
+.box input[type=range]{width:100%}
+.prev{height:140px;border:2px dashed var(--line);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;overflow:hidden}
+.prev img{max-width:100%;max-height:100%}
+.small{font-size:14px;color:#5b6b73;line-height:1.5}
+#player{position:fixed;inset:0;z-index:30;background:#000;display:none;flex-direction:column}
+#player .pb{display:flex;justify-content:flex-start;padding:8px;padding-top:max(8px,env(safe-area-inset-top))}
+#player .pb button{width:68px;height:68px;border-radius:50%;border:0;background:#fff;font-size:32px}
+#player iframe{flex:1;border:0;width:100%}
+#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#2b3a42;color:#fff;padding:10px 16px;border-radius:14px;font-size:15px;z-index:40;display:none;max-width:88%;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <button class="hb" id="homeBtn" aria-label="Ana sayfa">🏠</button>
+  <div class="ttl" id="ttl"></div>
+  <button class="hb lang" id="langBtn"></button>
+  <button class="hb" id="gearBtn" aria-label="Ebeveyn paneli">⚙️</button>
+</header>
+<div id="ribbon">✏️ Düzenleme modu açık — kapatmak için ⚙️ düğmesine basılı tutun</div>
+<div id="main"></div>
+<div id="bar"><div class="bp" id="barPic"></div><div class="bt" id="barTxt"></div><button id="barPlay" aria-label="Tekrar söyle">▶</button></div>
+<div id="player"><div class="pb"><button id="pClose" aria-label="Kapat">✕</button></div><iframe id="pFrame" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe></div>
+<div id="toast"></div>
+<script>
+/* ---------- küçük çizim yardımcıları ---------- */
+const svg=(inner)=>`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+const plate=(inner)=>svg(`<circle cx="50" cy="50" r="46" fill="#fff" stroke="#c9d3da" stroke-width="3"/><circle cx="50" cy="50" r="35" fill="#f4f7f9" stroke="#e0e6eb" stroke-width="2"/>${inner}`);
+const foodC='<ellipse cx="38" cy="52" rx="15" ry="12" fill="#fff9e6" stroke="#e6d9a8" stroke-width="1.5"/><ellipse cx="64" cy="42" rx="13" ry="10" fill="#c9783a"/><circle cx="62" cy="67" r="8" fill="#e53935"/><circle cx="44" cy="71" r="6" fill="#66bb6a"/><circle cx="36" cy="36" r="5" fill="#66bb6a"/>';
+const SV_PLATE=plate(foodC);
+const SV_JAR=svg('<rect x="24" y="8" width="52" height="16" rx="5" fill="#3a2a22"/><rect x="20" y="22" width="60" height="70" rx="12" fill="#6b3f24"/><rect x="20" y="46" width="60" height="26" fill="#f7ecd2"/><rect x="20" y="53" width="60" height="9" fill="#d32f2f"/><rect x="27" y="28" width="9" height="58" rx="4" fill="#fff" opacity=".18"/>');
+const SV_NUT=plate([[27,27],[51,27],[27,51],[51,51]].map(([x,y])=>`<rect x="${x}" y="${y}" width="22" height="22" rx="3" fill="#ecc58a" stroke="#c99a52" stroke-width="1.5"/><rect x="${x+3}" y="${y+3}" width="16" height="16" rx="2" fill="#5a3320"/>`).join(''));
+const SV_TOAST=plate('<polygon points="22,26 74,26 22,78" fill="#e2a84b" stroke="#b9772a" stroke-width="2.5" stroke-linejoin="round"/><polygon points="78,30 78,78 26,78" fill="#e2a84b" stroke="#b9772a" stroke-width="2.5" stroke-linejoin="round"/><path d="M30 40 L44 26 M40 56 L66 30 M52 66 L74 44 M62 74 L78 58" stroke="#b9772a" stroke-width="2" opacity=".5"/>');
+const glass=(c)=>svg(`<path d="M26 14 H74 L68 88 Q67 92 62 92 H38 Q33 92 32 88 Z" fill="#eaf6fd" stroke="#8fb8cc" stroke-width="3"/><path d="M29 38 H71 L68 88 Q67 92 62 92 H38 Q33 92 32 88 Z" fill="${c}"/>`);
+const sc=(...p)=>`<div class="scene">${p.join('')}</div>`;
+const dot=(c)=>`<div class="dot" style="background:${c}"></div>`;
+
+/* ---------- kart verileri ---------- */
+const K=(id,pic,tr,de,o={})=>({id,pic,tr,de,...o});
+const W=(id,pic,tr,de,str,sde,o={})=>K(id,pic,tr,de,{s:[str,sde],...o});
+const A=(id,pic,tr,de,st,sd)=>K(id,pic,tr,de,st?{s:[`${tr}. ${st}`,`${de}. ${sd}`]}:{});
+
+const TR_L=[['A','a','Arı','🐝','a'],['B','b','Balık','🐟','be'],['C','c','Civciv','🐥','ce'],['Ç','ç','Çiçek','🌸','çe'],['D','d','Dondurma','🍦','de'],['E','e','Elma','🍎','e'],['F','f','Fil','🐘','fe'],['G','g','Güneş','☀️','ge'],['Ğ','ğ','Dağ','⛰️','yumuşak ge'],['H','h','Havuç','🥕','he'],['I','ı','Ispanak','🥬','ı'],['İ','i','İnek','🐄','i'],['J','j','Jeton','🪙','je'],['K','k','Kedi','🐱','ke'],['L','l','Limon','🍋','le'],['M','m','Muz','🍌','me'],['N','n','Nane','🌿','ne'],['O','o','Okul','🏫','o'],['Ö','ö','Ördek','🦆','ö'],['P','p','Portakal','🍊','pe'],['R','r','Robot','🤖','re'],['S','s','Saat','⏰','se'],['Ş','ş','Şemsiye','☂️','şe'],['T','t','Top','⚽','te'],['U','u','Uçak','✈️','u'],['Ü','ü','Üzüm','🍇','ü'],['V','v','Vapur','🚢','ve'],['Y','y','Yıldız','⭐','ye'],['Z','z','Zürafa','🦒','ze']];
+const DE_L=[['A','Apfel','🍎'],['B','Banane','🍌'],['C','Clown','🤡'],['D','Delfin','🐬'],['E','Elefant','🐘'],['F','Fisch','🐟'],['G','Giraffe','🦒'],['H','Hund','🐶'],['I','Igel','🦔'],['J','Jacke','🧥'],['K','Katze','🐱'],['L','Löwe','🦁'],['M','Maus','🐭'],['N','Nase','👃'],['O','Ohr','👂'],['P','Pizza','🍕'],['Q','Quadrat','🟦'],['R','Roboter','🤖'],['S','Sonne','☀️'],['T','Tiger','🐯'],['U','Uhr','⏰'],['V','Vogel','🐦'],['W','Wasser','💧'],['X','Xylofon','🎶'],['Y','Yoga','🧘'],['Z','Zebra','🦓']];
+const letterPic=(big,e)=>`<div class="letter"><b>${big}</b><span class="emo">${e}</span></div>`;
+const TRL=()=>TR_L.map(([U,l,w,e,nm],i)=>K('tl'+i,letterPic(U+' '+l,e),w,'',{s:[`${nm}. ${w}.`,false]}));
+const DEL=()=>DE_L.map(([U,w,e],i)=>K('dl'+i,letterPic(U+' '+U.toLowerCase(),e),'',w,{s:[false,`${U}. ${w}.`]}));
+const NUMW=[['Sıfır','Null'],['Bir','Eins'],['İki','Zwei'],['Üç','Drei'],['Dört','Vier'],['Beş','Fünf'],['Altı','Sechs'],['Yedi','Sieben'],['Sekiz','Acht'],['Dokuz','Neun'],['On','Zehn']];
+const NUMS=()=>NUMW.map(([t,d],n)=>K('n'+n,`<div class="num"><b>${n}</b><span class="dots">${'🍎'.repeat(n)}</span></div>`,t,d));
+
+const CATS=[
+{id:'want',pic:'🙋',tr:'İstiyorum',de:'Ich möchte',col:'#ef8a4b',cards:[
+ W('w_eat',sc(SV_PLATE,'🍴'),'Yemek','Essen','Yemek yemek istiyorum.','Ich möchte essen.',{wide:1}),
+ W('w_water',sc(glass('#6ec6f2')),'Su','Wasser','Su içmek istiyorum.','Ich möchte Wasser trinken.'),
+ W('w_wc','🚽','Tuvalet','Toilette','Tuvalete gitmek istiyorum.','Ich muss auf die Toilette.'),
+ W('w_sleep','🛏️','Uyku','Schlafen','Uyumak istiyorum.','Ich möchte schlafen.'),
+ W('w_play','🧸','Oyun','Spielen','Oynamak istiyorum.','Ich möchte spielen.'),
+ W('w_tablet','📱','Tablet','Tablet','Tablet istiyorum.','Ich möchte das Tablet.'),
+ W('w_video','📺','Video','Video','Video izlemek istiyorum.','Ich möchte ein Video sehen.'),
+ W('w_music','🎵','Müzik','Musik','Müzik dinlemek istiyorum.','Ich möchte Musik hören.'),
+ W('w_out','🌳','Dışarı','Draußen','Dışarı çıkmak istiyorum.','Ich möchte nach draußen.'),
+ W('w_bath','🛁','Banyo','Baden','Banyo yapmak istiyorum.','Ich möchte baden.'),
+ W('w_head','🎧','Kulaklık','Kopfhörer','Kulaklık istiyorum.','Ich möchte Kopfhörer.'),
+ W('w_hug','🤗','Sarılmak','Umarmung','Sarılmak istiyorum.','Ich möchte eine Umarmung.'),
+ W('w_help','🆘','Yardım','Hilfe','Yardım istiyorum.','Ich brauche Hilfe.'),
+ W('w_more','➕','Daha','Mehr','Daha istiyorum.','Ich möchte mehr.'),
+ W('w_done','✅','Bitti','Fertig','Bitti.','Fertig.'),
+ W('w_yes','👍','Evet','Ja','Evet.','Ja.'),
+ W('w_no','👎','Hayır','Nein','Hayır.','Nein.'),
+ W('w_mom','👩','Anne','Mama','Anneyi istiyorum.','Ich möchte zu Mama.'),
+ W('w_dad','👨','Baba','Papa','Babayı istiyorum.','Ich möchte zu Papa.'),
+ W('w_pls','🙏','Lütfen','Bitte','Lütfen.','Bitte.'),
+ W('w_thx','🤲','Teşekkürler','Danke','Teşekkür ederim.','Danke.')
+]},
+{id:'food',pic:'🍽️',tr:'Yemek & İçecek',de:'Essen & Trinken',col:'#e8a33d',cards:[
+ W('f_nut',sc(SV_JAR,SV_NUT),'Nutellalı ekmek','Brot mit Nutella','Nutellalı ekmek istiyorum.','Ich möchte Brot mit Nutella.',{wide:1}),
+ W('f_toast',sc(SV_TOAST),'Tost','Toast','Tost istiyorum.','Ich möchte einen Toast.'),
+ W('f_water',sc(glass('#6ec6f2')),'Su','Wasser','Su istiyorum.','Ich möchte Wasser.'),
+ W('f_milk','🥛','Süt','Milch','Süt istiyorum.','Ich möchte Milch.'),
+ W('f_juice','🧃','Meyve suyu','Saft','Meyve suyu istiyorum.','Ich möchte Saft.'),
+ W('f_bread','🍞','Ekmek','Brot','Ekmek istiyorum.','Ich möchte Brot.'),
+ W('f_cheese','🧀','Peynir','Käse','Peynir istiyorum.','Ich möchte Käse.'),
+ W('f_egg','🥚','Yumurta','Ei','Yumurta istiyorum.','Ich möchte ein Ei.'),
+ W('f_pasta','🍝','Makarna','Nudeln','Makarna istiyorum.','Ich möchte Nudeln.'),
+ W('f_rice','🍚','Pilav','Reis','Pilav istiyorum.','Ich möchte Reis.'),
+ W('f_soup','🍲','Çorba','Suppe','Çorba istiyorum.','Ich möchte Suppe.'),
+ W('f_chick','🍗','Tavuk','Hähnchen','Tavuk istiyorum.','Ich möchte Hähnchen.'),
+ W('f_pot','🥔','Patates','Kartoffeln','Patates istiyorum.','Ich möchte Kartoffeln.'),
+ W('f_pizza','🍕','Pizza','Pizza','Pizza istiyorum.','Ich möchte Pizza.'),
+ W('f_apple','🍎','Elma','Apfel','Elma istiyorum.','Ich möchte einen Apfel.'),
+ W('f_ban','🍌','Muz','Banane','Muz istiyorum.','Ich möchte eine Banane.'),
+ W('f_or','🍊','Portakal','Orange','Portakal istiyorum.','Ich möchte eine Orange.'),
+ W('f_gr','🍇','Üzüm','Trauben','Üzüm istiyorum.','Ich möchte Trauben.'),
+ W('f_str','🍓','Çilek','Erdbeeren','Çilek istiyorum.','Ich möchte Erdbeeren.'),
+ W('f_ice','🍦','Dondurma','Eis','Dondurma istiyorum.','Ich möchte Eis.'),
+ W('f_bis','🍪','Bisküvi','Kekse','Bisküvi istiyorum.','Ich möchte Kekse.'),
+ W('f_choc','🍫','Çikolata','Schokolade','Çikolata istiyorum.','Ich möchte Schokolade.'),
+ W('f_cake','🧁','Kek','Kuchen','Kek istiyorum.','Ich möchte Kuchen.')
+]},
+{id:'things',pic:'🪥',tr:'Eşyalar',de:'Dinge',col:'#4aa3c7',cards:[
+ K('t_glass','🥛','Bardak','Glas'),K('t_plate','🍽️','Tabak','Teller'),K('t_spoon','🥄','Kaşık','Löffel'),K('t_fork','🍴','Çatal','Gabel'),
+ K('t_brush','🪥','Diş fırçası','Zahnbürste'),K('t_soap','🧼','Sabun','Seife'),K('t_shoe','👟','Ayakkabı','Schuhe'),K('t_sock','🧦','Çorap','Socken'),
+ K('t_shirt','👕','Tişört','T-Shirt'),K('t_pants','👖','Pantolon','Hose'),K('t_hat','🧢','Şapka','Mütze'),K('t_coat','🧥','Mont','Jacke'),
+ K('t_bed','🛏️','Yatak','Bett'),K('t_chair','🪑','Sandalye','Stuhl'),K('t_door','🚪','Kapı','Tür'),K('t_light','💡','Işık','Licht'),
+ K('t_phone','📱','Telefon','Handy'),K('t_tv','📺','Televizyon','Fernseher'),K('t_ball','⚽','Top','Ball'),K('t_toy','🧸','Oyuncak','Spielzeug'),
+ K('t_car','🚗','Araba','Auto'),K('t_book','📖','Kitap','Buch'),K('t_pen','✏️','Kalem','Stift'),K('t_bag','🎒','Çanta','Rucksack'),
+ K('t_key','🔑','Anahtar','Schlüssel'),K('t_clock','⏰','Saat','Uhr'),K('t_wc','🚽','Tuvalet','Toilette'),K('t_shower','🚿','Duş','Dusche'),
+ K('t_house','🏠','Ev','Haus'),K('t_head','🎧','Kulaklık','Kopfhörer')
+]},
+{id:'animals',pic:'🐶',tr:'Hayvanlar',de:'Tiere',col:'#6bb36b',cards:[
+ A('a_dog','🐶','Köpek','Hund','Hav hav!','Wau wau!'),A('a_cat','🐱','Kedi','Katze','Miyav!','Miau!'),A('a_bird','🐦','Kuş','Vogel','Cik cik!','Piep piep!'),A('a_fish','🐟','Balık','Fisch'),
+ A('a_horse','🐴','At','Pferd'),A('a_cow','🐄','İnek','Kuh','Möö!','Muh!'),A('a_sheep','🐑','Koyun','Schaf','Mee!','Mäh!'),A('a_hen','🐔','Tavuk','Huhn','Gıt gıt!','Gack gack!'),
+ A('a_duck','🦆','Ördek','Ente','Vak vak!','Quak quak!'),A('a_rabbit','🐰','Tavşan','Hase'),A('a_lion','🦁','Aslan','Löwe','Grrr!','Grrr!'),A('a_ele','🐘','Fil','Elefant'),
+ A('a_monkey','🐵','Maymun','Affe'),A('a_bear','🐻','Ayı','Bär'),A('a_gir','🦒','Zürafa','Giraffe'),A('a_frog','🐸','Kurbağa','Frosch','Vrak vrak!','Quak quak!'),
+ A('a_butt','🦋','Kelebek','Schmetterling'),A('a_bee','🐝','Arı','Biene','Vızzz!','Bzzz!'),A('a_peng','🐧','Penguen','Pinguin'),A('a_turtle','🐢','Kaplumbağa','Schildkröte'),A('a_mouse','🐭','Fare','Maus')
+]},
+{id:'letters',pic:'<div class="letter"><b>A B</b></div>',tr:'Harfler',de:'Buchstaben',col:'#5b8def',cards:()=>S.lang==='de'?DEL():TRL()},
+{id:'numbers',pic:'<div class="num"><b>1 2 3</b></div>',tr:'Rakamlar',de:'Zahlen',col:'#8d6ee0',cards:NUMS},
+{id:'colors',pic:'🎨',tr:'Renkler',de:'Farben',col:'#e0709a',cards:[
+ K('c_red',dot('#e53935'),'Kırmızı','Rot'),K('c_blue',dot('#1e88e5'),'Mavi','Blau'),K('c_yel',dot('#fdd835'),'Sarı','Gelb'),K('c_grn',dot('#43a047'),'Yeşil','Grün'),
+ K('c_org',dot('#fb8c00'),'Turuncu','Orange'),K('c_pur',dot('#8e24aa'),'Mor','Lila'),K('c_pink',dot('#f48fb1'),'Pembe','Rosa'),K('c_blk',dot('#212121'),'Siyah','Schwarz'),
+ K('c_wht',dot('#ffffff'),'Beyaz','Weiß'),K('c_brn',dot('#795548'),'Kahverengi','Braun'),K('c_gry',dot('#9e9e9e'),'Gri','Grau')
+]},
+{id:'feel',pic:'😊',tr:'Duygularım',de:'Gefühle',col:'#f2c230',cards:[
+ W('e_happy','😊','Mutlu','Glücklich','Ben mutluyum.','Ich bin glücklich.'),W('e_sad','😢','Üzgün','Traurig','Üzgünüm.','Ich bin traurig.'),
+ W('e_angry','😠','Kızgın','Wütend','Kızgınım.','Ich bin wütend.'),W('e_scared','😨','Korku','Angst','Korkuyorum.','Ich habe Angst.'),
+ W('e_tired','😴','Yorgun','Müde','Yorgunum.','Ich bin müde.'),W('e_pain','🤕','Canım acıyor','Aua','Canım acıyor.','Mir tut etwas weh.'),
+ W('e_hung','🤤','Acıktım','Hunger','Acıktım.','Ich habe Hunger.'),W('e_thirst','🥵','Susadım','Durst','Susadım.','Ich habe Durst.'),
+ W('e_bored','🥱','Sıkıldım','Langweilig','Sıkıldım.','Mir ist langweilig.'),W('e_cold','🥶','Üşüyorum','Kalt','Üşüyorum.','Mir ist kalt.'),
+ W('e_loud','🔊','Çok gürültülü','Zu laut','Çok gürültülü.','Das ist zu laut.'),W('e_love','❤️','Seni seviyorum','Ich hab dich lieb','Seni seviyorum.','Ich hab dich lieb.')
+]},
+{id:'video',pic:'🎬',tr:'Videolar',de:'Videos',col:'#d9534f',video:true,cards:[]},
+{id:'mine',pic:'📷',tr:'Benim Kartlarım',de:'Meine Karten',col:'#2fa89a',cards:[]}
+];
+
+/* ---------- durum ---------- */
+const LOGO='data:image/jpeg;base64,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';
+const KEY='benim_sesim_v1';
+let S={lang:'tr',rate:0.8,text:true,hidden:[],ov:{},custom:[],videos:[]};
+try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+let view='home',last=null,edit=false;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Kaydedilemedi: hafıza dolmuş olabilir (çok fazla fotoğraf)')}}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)}
+
+/* ---------- seslendirme ---------- */
+let voices=[];
+function loadVoices(){try{voices=speechSynthesis.getVoices()}catch(e){}}
+if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
+function pickVoice(l){const v=voices.filter(x=>x.lang.toLowerCase().replace('_','-').startsWith(l));return v.find(x=>x.localService)||v[0]||null}
+const pick=(sv,lab)=>sv===false?'':(sv||lab||'');
+function spoken(c){
+  const L=S.lang,out=[];
+  if(L!=='de'){const t=pick(c.s&&c.s[0],c.tr);if(t)out.push({l:'tr',t})}
+  if(L!=='tr'){const t=pick(c.s&&c.s[1],c.de);if(t)out.push({l:'de',t})}
+  if(!out.length){const t=c.tr||c.de;if(t)out.push({l:c.tr?'tr':'de',t})}
+  return out;
+}
+function speakParts(parts){
+  if(!('speechSynthesis' in window)){toast('Bu cihaz sesli okumayı desteklemiyor');return}
+  try{speechSynthesis.cancel()}catch(e){}
+  parts.forEach(p=>{const u=new SpeechSynthesisUtterance(p.t);u.lang=p.l==='tr'?'tr-TR':'de-DE';const v=pickVoice(p.l);if(v)u.voice=v;u.rate=S.rate;u.pitch=1.05;speechSynthesis.speak(u)});
+}
+
+/* ---------- kartlar ---------- */
+function picHtml(c){
+  if(c.img)return `<img src="${c.img}" alt="">`;
+  const p=c.pic||'🖼️';return p.charAt(0)==='<'?p:`<span class="emo">${p}</span>`;
+}
+function labelHtml(c){
+  const L=S.lang;let o='';
+  if(L!=='de'&&c.tr)o+=`<div>${esc(c.tr)}</div>`;
+  if(L!=='tr'&&c.de)o+=`<div class="${L==='both'&&c.tr?'sec':''}">${esc(c.de)}</div>`;
+  if(!o)o=`<div>${esc(c.tr||c.de||'')}</div>`;
+  return o;
+}
+function cardsOf(cat){
+  let base=typeof cat.cards==='function'?cat.cards():cat.cards.slice();
+  base=base.map(c=>{const o=S.ov[c.id];if(!o)return c;const m={...c};if(o.img)m.img=o.img;if(o.tr!==undefined)m.tr=o.tr;if(o.de!==undefined)m.de=o.de;if(o.s)m.s=o.s;return m});
+  const cu=S.custom.filter(x=>x.cat===cat.id).map(x=>({...x,custom:1}));
+  return base.concat(cu);
+}
+function cardEl(c,i,col,k='card'){
+  return `<div class="card${c.wide?' wide':''}" data-k="${k}" data-i="${i}" style="--c:${col}">${edit&&k==='card'?'<i class="pen">✏️</i>':''}<div class="pic">${picHtml(c)}</div>${S.text||edit?`<div class="lbl">${labelHtml(c)}</div>`:''}</div>`;
+}
+function catVisible(){return CATS.filter(c=>!S.hidden.includes(c.id))}
+
+/* ---------- ekranlar ---------- */
+function render(){
+  $('#ribbon').style.display=edit?'block':'none';
+  $('#langBtn').textContent=S.lang==='tr'?'🇹🇷 TR':S.lang==='de'?'🇩🇪 DE':'🇹🇷🇩🇪';
+  const m=$('#main');
+  $('#homeBtn').style.visibility=view==='home'?'hidden':'visible';
+  if(view==='home'){
+    $('#ttl').innerHTML='<img class="logo" src="'+LOGO+'" alt=""><span class="t">Benim Sesim</span>';
+    const cs=catVisible();
+    m.className='home';
+    m.innerHTML=`<div class="grid">${cs.map((c,i)=>cardEl({pic:c.pic,tr:c.tr,de:c.de},i,c.col,'cat')).join('')}</div>`;
+    $('#bar').style.display='none';
+    return;
+  }
+  const cat=CATS.find(c=>c.id===view);
+  const nm=S.lang==='de'?cat.de:cat.tr;
+  $('#ttl').innerHTML=`<span class="emo">${cat.pic.charAt(0)==='<'?'':cat.pic}</span><span class="t">${esc(nm)}</span>`;
+  m.className='';
+  if(cat.video){renderVideos(cat);return}
+  const cs=cardsOf(cat);
+  let h=cs.map((c,i)=>cardEl(c,i,cat.col)).join('');
+  if(edit)h+=`<div class="card add" data-k="add"><div class="pic"><span class="emo">➕</span></div><div class="lbl">Kart ekle</div></div>`;
+  if(!cs.length&&!edit)h=`<div class="hint">Burası henüz boş.<br>⚙️ düğmesine <b>basılı tutun</b> → <b>Düzenleme modu</b> → <b>➕ Kart ekle</b>.<br>Kendi fotoğraflarınızla (örn. kendi tabağı, kendi oyuncağı) kart yapabilirsiniz.</div>`;
+  m.innerHTML=`<div class="grid">${h}</div>`;
+  if(last)showBar(last);else $('#bar').style.display='none';
+}
+function videoThumb(v){return v.id?`<img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" onerror="this.outerHTML='<span class=emo>🎬</span>'">`:'<span class="emo">🎬</span>'}
+function renderVideos(cat){
+  let h=S.videos.map((v,i)=>`<div class="card wide" data-k="vid" data-i="${i}" style="--c:${cat.col}">${edit?'<i class="pen">✏️</i>':''}<div class="pic">${videoThumb(v)}<div style="position:absolute;font-size:54px;opacity:.9">▶️</div></div><div class="lbl">${esc(v.t||'Video')}</div></div>`).join('');
+  if(edit)h+=`<div class="card add" data-k="vadd"><div class="pic"><span class="emo">➕</span></div><div class="lbl">Video ekle</div></div>`;
+  if(!S.videos.length)h=`<div class="hint">Henüz video yok.<br>⚙️ düğmesine <b>basılı tutun</b> → <b>Düzenleme modu</b> → <b>➕ Video ekle</b>.<br>YouTube'dan şarkı/eğitici film bağlantısını kopyalayıp yapıştırın. Videolar için internet gerekir.</div>`+(edit?'':'' )+h;
+  if(edit)h+=`<div class="hint">YouTube'da aramak için (ebeveyn):<br><button class="hb" style="display:inline-flex;margin:6px 6px 0 0" onclick="window.open('https://www.youtube.com/results?search_query=Niloya','_blank')">🔎 Niloya</button><button class="hb" style="display:inline-flex;margin:6px 6px 0 0" onclick="window.open('https://www.youtube.com/results?search_query=çocuk+şarkıları+eğitici','_blank')">🔎 Çocuk şarkıları</button><button class="hb" style="display:inline-flex;margin:6px 0 0" onclick="window.open('https://www.youtube.com/results?search_query=Kinderlieder+zum+Lernen','_blank')">🔎 Kinderlieder</button></div>`;
+  $('#main').innerHTML=`<div class="grid">${h}</div>`;
+  $('#bar').style.display='none';
+}
+function showBar(c){
+  $('#bar').style.display='flex';
+  $('#barPic').innerHTML=picHtml(c);
+  $('#barTxt').innerHTML=labelHtml(c);
+}
+
+/* ---------- gezinme ---------- */
+function go(id){view=id;last=null;history.pushState({v:id},'');render();window.scrollTo(0,0)}
+function home(){if(history.state&&history.state.v){history.back()}else{view='home';last=null;render()}}
+window.addEventListener('popstate',e=>{view=(e.state&&e.state.v)||'home';last=null;render()});
+history.replaceState({},'');
+$('#homeBtn').onclick=home;
+$('#langBtn').onclick=()=>{S.lang=S.lang==='tr'?'de':S.lang==='de'?'both':'tr';save();render();toast(S.lang==='tr'?'Türkçe':S.lang==='de'?'Deutsch':'Türkçe + Deutsch')};
+$('#barPlay').onclick=()=>{if(last)speakParts(spoken(last))};
+
+$('#main').addEventListener('click',e=>{
+  const el=e.target.closest('.card');if(!el)return;
+  const k=el.dataset.k,i=+el.dataset.i;
+  if(k==='cat'){const c=catVisible()[i];speakParts(spoken({tr:c.tr,de:c.de}));go(c.id);return}
+  if(k==='add'){openEditor(CATS.find(c=>c.id===view),null);return}
+  if(k==='vadd'){openVideoEditor(-1);return}
+  if(k==='vid'){edit?openVideoEditor(i):playVideo(S.videos[i]);return}
+  const cat=CATS.find(c=>c.id===view),c=cardsOf(cat)[i];
+  if(edit){openEditor(cat,c);return}
+  last=c;showBar(c);speakParts(spoken(c));
+  el.classList.add('on');setTimeout(()=>el.classList.remove('on'),450);
+});
+
+/* ---------- video ---------- */
+function parseYT(u){
+  u=(u||'').trim();let m;
+  if((m=u.match(/[?&]v=([\w-]{11})/)))return {id:m[1]};
+  if((m=u.match(/youtu\.be\/([\w-]{11})/)))return {id:m[1]};
+  if((m=u.match(/\/(?:shorts|embed|live)\/([\w-]{11})/)))return {id:m[1]};
+  if((m=u.match(/[?&]list=([\w-]+)/)))return {list:m[1]};
+  if(/^[\w-]{11}$/.test(u))return {id:u};
+  return null;
+}
+function playVideo(v){
+  const src=v.id?`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1`:`https://www.youtube-nocookie.com/embed/videoseries?list=${v.list}&autoplay=1&rel=0&playsinline=1`;
+  try{speechSynthesis.cancel()}catch(e){}
+  $('#pFrame').src=src;$('#player').style.display='flex';
+}
+$('#pClose').onclick=()=>{$('#pFrame').src='about:blank';$('#player').style.display='none'};
+function openVideoEditor(i){
+  const v=i>=0?S.videos[i]:null;
+  const o=modal(`<h2>${v?'Videoyu düzenle':'Video ekle'}</h2>
+   <label>YouTube bağlantısı (video veya oynatma listesi)<input id="vUrl" value="${v?esc(v.url||''):''}" placeholder="https://www.youtube.com/watch?v=..."></label>
+   <label>Başlık (isteğe bağlı)<input id="vTit" value="${v?esc(v.t||''):''}"></label>
+   <p class="small">Not: Videolar internetten oynatılır. Bağlantıyı YouTube uygulamasında “Paylaş → Bağlantıyı kopyala” ile alabilirsiniz.</p>
+   <button class="pri" id="vSave">Kaydet</button>${v?'<button class="dng" id="vDel">Sil</button>':''}<button id="vCan">Vazgeç</button>`);
+  o.querySelector('#vCan').onclick=o.close;
+  o.querySelector('#vSave').onclick=()=>{
+    const url=o.querySelector('#vUrl').value,p=parseYT(url);
+    if(!p){toast('Bağlantı anlaşılamadı');return}
+    const item={...p,url,t:o.querySelector('#vTit').value.trim()};
+    if(v)S.videos[i]=item;else S.videos.push(item);
+    save();o.close();render();
+  };
+  if(v)o.querySelector('#vDel').onclick=()=>{S.videos.splice(i,1);save();o.close();render()};
+}
+
+/* ---------- kart düzenleyici ---------- */
+function modal(html){
+  const o=document.createElement('div');o.className='ov';o.innerHTML=`<div class="box">${html}</div>`;
+  document.body.appendChild(o);o.close=()=>o.remove();
+  o.addEventListener('click',e=>{if(e.target===o)o.close()});return o;
+}
+function readImg(file,cb){
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{const m=380,sc=Math.min(1,m/Math.max(im.width,im.height));const cv=document.createElement('canvas');cv.width=Math.round(im.width*sc);cv.height=Math.round(im.height*sc);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);cb(cv.toDataURL('image/jpeg',.82))};im.src=r.result};
+  r.readAsDataURL(file);
+}
+function openEditor(cat,c){
+  const isNew=!c,textOk=!['letters','numbers','colors'].includes(cat.id);
+  let img=c&&c.img?c.img:'';
+  const sv=c&&c.s?c.s:[];
+  const o=modal(`<h2>${isNew?'Yeni kart':'Kartı düzenle'}</h2>
+   <div class="prev" id="ePrev"></div>
+   <label class="btn" style="margin:0">📷 Fotoğraf çek / resim seç<input type="file" accept="image/*" id="eFile" hidden></label>
+   ${textOk?`<label>Türkçe ad<input id="eTr" value="${esc(c?c.tr:'')}"></label>
+   <label>Almanca ad<input id="eDe" value="${esc(c?c.de:'')}"></label>
+   <label>Türkçe söylenecek cümle (boşsa ad söylenir)<input id="eSt" value="${esc(sv[0]||'')}" placeholder="örn. Nutellalı ekmek istiyorum."></label>
+   <label>Almanca söylenecek cümle (boşsa ad söylenir)<input id="eSd" value="${esc(sv[1]||'')}" placeholder="z.B. Ich möchte Brot mit Nutella."></label>`:''}
+   <div style="margin-top:14px"><button class="pri" id="eSave">Kaydet</button>${!isNew&&(c.custom||S.ov[c.id])?`<button class="dng" id="eDel">${c.custom?'Kartı sil':'Orijinale dön'}</button>`:''}<button id="eCan">Vazgeç</button></div>`);
+  const prev=()=>{o.querySelector('#ePrev').innerHTML=img?`<img src="${img}">`:(c?picHtml(c):'<span class="small">Resim seçilmedi</span>')};prev();
+  o.querySelector('#eFile').onchange=e=>{const f=e.target.files[0];if(f)readImg(f,d=>{img=d;prev()})};
+  o.querySelector('#eCan').onclick=o.close;
+  o.querySelector('#eSave').onclick=()=>{
+    const g=id=>o.querySelector(id)?o.querySelector(id).value.trim():'';
+    const tr=g('#eTr'),de=g('#eDe'),s=[g('#eSt')||null,g('#eSd')||null];
+    if(isNew){
+      if(!img&&!tr&&!de){toast('Resim veya ad girin');return}
+      S.custom.push({id:'c'+Date.now(),cat:cat.id,tr,de,s,img});
+    }else if(c.custom){
+      const x=S.custom.find(z=>z.id===c.id);Object.assign(x,{tr,de,s,img});
+    }else{
+      const ov=S.ov[c.id]||{};if(img)ov.img=img;if(textOk){ov.tr=tr;ov.de=de;ov.s=s}S.ov[c.id]=ov;
+    }
+    save();o.close();render();
+  };
+  const d=o.querySelector('#eDel');
+  if(d)d.onclick=()=>{if(c.custom)S.custom=S.custom.filter(z=>z.id!==c.id);else delete S.ov[c.id];save();o.close();render()};
+}
+
+/* ---------- ebeveyn paneli ---------- */
+function openSettings(){
+  const vs=l=>pickVoice(l)?`✅ ${l==='tr'?'Türkçe':'Almanca'} ses bulundu`:`⚠️ ${l==='tr'?'Türkçe':'Almanca'} ses bulunamadı`;
+  const o=modal(`<h2>👨‍👧 Ebeveyn paneli</h2>
+   <h3>Konuşma dili</h3>
+   <div class="seg" id="sLang"><button data-v="tr">Türkçe</button><button data-v="de">Deutsch</button><button data-v="both">Türkçe + Deutsch</button></div>
+   <h3>Konuşma hızı</h3><input type="range" id="sRate" min="0.5" max="1.2" step="0.05" value="${S.rate}">
+   <label class="chk"><input type="checkbox" id="sText" ${S.text?'checked':''}> Kartların altında yazıyı göster</label>
+   <label class="chk"><input type="checkbox" id="sEdit" ${edit?'checked':''}> Düzenleme modu (kart, resim, video ekle/değiştir)</label>
+   <h3>Görünen bölümler</h3>
+   ${CATS.map(c=>`<label class="chk"><input type="checkbox" data-cat="${c.id}" ${S.hidden.includes(c.id)?'':'checked'}> ${c.tr}</label>`).join('')}
+   <h3>Ses testi</h3>
+   <button id="tTr">▶ Türkçe dene</button><button id="tDe">▶ Deutsch testen</button>
+   <p class="small">${vs('tr')}<br>${vs('de')}<br>Ses yoksa: telefon ayarları → Dil ve giriş → Metin okuma (Text-to-speech) bölümünden Türkçe ve Almanca sesleri indirin.</p>
+   <h3>Yedek</h3>
+   <button id="bExp">⬇ Yedeği indir</button><label class="btn" style="margin:6px 6px 0 0">⬆ Yedeği yükle<input type="file" accept=".json,application/json" id="bImp" hidden></label>
+   <p class="small">Fotoğraflar ve kartlar bu cihazın tarayıcı hafızasında durur. Telefon değiştirirken yedeği alın.</p>
+   <div style="margin-top:14px"><button class="pri" id="sOk">Tamam</button></div>`);
+  const sync=()=>o.querySelectorAll('#sLang button').forEach(b=>b.classList.toggle('sel',b.dataset.v===S.lang));sync();
+  o.querySelectorAll('#sLang button').forEach(b=>b.onclick=()=>{S.lang=b.dataset.v;save();sync()});
+  o.querySelector('#sRate').oninput=e=>{S.rate=+e.target.value;save()};
+  o.querySelector('#sText').onchange=e=>{S.text=e.target.checked;save()};
+  o.querySelector('#sEdit').onchange=e=>{edit=e.target.checked};
+  o.querySelectorAll('[data-cat]').forEach(b=>b.onchange=()=>{const id=b.dataset.cat;S.hidden=S.hidden.filter(x=>x!==id);if(!b.checked)S.hidden.push(id);save()});
+  o.querySelector('#tTr').onclick=()=>speakParts([{l:'tr',t:'Merhaba! Ben senin sesinim.'}]);
+  o.querySelector('#tDe').onclick=()=>speakParts([{l:'de',t:'Hallo! Ich bin deine Stimme.'}]);
+  o.querySelector('#bExp').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='benim-sesim-yedek.json';a.click()};
+  o.querySelector('#bImp').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{Object.assign(S,JSON.parse(r.result));save();o.close();render();toast('Yedek yüklendi')}catch(x){toast('Dosya okunamadı')}};r.readAsText(f)};
+  o.querySelector('#sOk').onclick=()=>{o.close();render()};
+}
+let hold;
+const gear=$('#gearBtn');
+gear.addEventListener('pointerdown',()=>{hold=setTimeout(()=>{hold=null;openSettings()},1200)});
+['pointerup','pointerleave','pointercancel'].forEach(ev=>gear.addEventListener(ev,()=>{if(hold){clearTimeout(hold);hold=null;if(ev==='pointerup')toast('Ebeveyn paneli için ⚙️ düğmesine 1-2 saniye basılı tutun')}}));
+gear.addEventListener('contextmenu',e=>e.preventDefault());
+render();
+if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){navigator.serviceWorker.register('sw.js').catch(function(){})}
+</script>
+</body>
+</html>
